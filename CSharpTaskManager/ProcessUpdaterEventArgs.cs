@@ -23,10 +23,19 @@ namespace CSharpTaskManager
             Memory = proc.WorkingSet64;
             Instance = proc;
         }
+        public ProcessUpdaterEventArgs(Process proc, int index)
+        {
+            Name = proc.ProcessName;
+            ID = proc.Id;
+            Memory = proc.WorkingSet64;
+            Instance = proc;
+            Index = index;
+        }
         public string Name { set; get; }
         public int ID { set; get; }
         public long Memory { set; get; }
         public Process Instance { set; get; }
         public Exception Error { set; get; }
+        public int Index { set; get; }
     }
 }

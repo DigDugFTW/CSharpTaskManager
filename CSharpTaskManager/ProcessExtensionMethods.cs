@@ -24,6 +24,8 @@ namespace CSharpTaskManager
             return new ListViewItem(new string[] { process.ProcessName, process.WorkingSet64.ToString(), process.Id.ToString()});
         }
 
+       
+
         public static ListViewItem[] ConvertToListViewArray(this HashSet<Process> hashSet)
         {
             ListViewItem[] tempItemCollection = new ListViewItem[hashSet.Count];

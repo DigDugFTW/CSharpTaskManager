@@ -15,7 +15,7 @@ namespace CSharpTaskManager
     /*TODO
      *  Update items that are in the list, but not replace them (Too expensive)
      *  Target removed items by ID so you don't kill multiple processes that might have the same name?
-     * 
+     *  Efficiently remove items from list, without search via string value, use integer. Either index or PID.
      */
 
 
@@ -57,6 +57,8 @@ namespace CSharpTaskManager
 
         private void ProcessCache_OnProcessStarted(object sender, ProcessUpdaterEventArgs e)
         {
+            MessageBox.Show("Process started " + e.Name+" Index: "+e.Index);
+            
             ControlInvokeRequired(listViewProcesses, () => listViewProcesses.Items.Add(e.Instance.ConvertToListViewItem()));
         }
 
@@ -64,7 +66,8 @@ namespace CSharpTaskManager
         {
             MessageBox.Show("Removing " + e.Name);
             // Will need to remove by ID
-            ControlInvokeRequired(listViewProcesses, () => listViewProcesses.Items.Remove(listViewProcesses.FindItemWithText(e.Name)));
+            ControlInvokeRequired(listViewProcesses, () => listViewProcesses.Items.RemoveAt(e.Index));
+            
         }
 
         public bool ControlInvokeRequired(Control c, Action a)

@@ -47,15 +47,18 @@ namespace CSharpTaskManager
             new Task(() => 
             {
                 Debug.WriteLine("Cache size: " + _procWrap.Count);
+               
                 while (ContinueCacheUpdate)
                 {
+                  
                     foreach(Process proc in Process.GetProcesses())
                     {
                         if (!_procWrap.Contains(proc))
                         {
                             _procWrap.Add(proc);
                             OnProcessStarted(null, new ProcessUpdaterEventArgs(proc));
-                            Debug.WriteLine("Adding: "+proc);
+                            Debug.WriteLine("Adding: "+proc+" index: ");
+                            
                         }
                        
                         // else
@@ -63,16 +66,22 @@ namespace CSharpTaskManager
                     }
                     foreach (var pr in _procWrap.ToList())
                     {
-                        if (Process.GetProcessesByName(pr.ProcessName).Length == 0)
+                        //Check if process is alive
+                        try
+                        {
+                            if (Process.GetProcessById(pr.Id) == null) ;
+                        }
+                        catch (Exception e)
                         {
                             _procWrap.Remove(pr);
                             OnProcessKilled(null, new ProcessUpdaterEventArgs(pr));
                             Debug.WriteLine("Process has exited, removing");
                         }
                     }
-                    Debug.WriteLine("Cache size: " + _procWrap.Count);
-                   
-                    Thread.Sleep(10000);
+
+                    //Debug.WriteLine("Cache size: " + _procWrap.Count);
+
+                    Thread.Sleep(2000);
                 }
             }).Start();
             Debug.WriteLine("Exited cache thread");
