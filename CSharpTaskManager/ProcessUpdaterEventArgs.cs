@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 namespace CSharpTaskManager
 {
-    class ProcessUpdaterEventArgs : EventArgs
+    public class ProcessUpdaterEventArgs : EventArgs
     {
         public ProcessUpdaterEventArgs(Process proc, Exception error)
         {

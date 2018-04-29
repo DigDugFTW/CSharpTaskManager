@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 namespace CSharpTaskManager
 {
-    class ProcessUpdater
+    public class ProcessUpdater
     {
         public delegate void ProcessUpdateHandler(object sender, ProcessUpdaterEventArgs e);
         public static event ProcessUpdateHandler OnProcessUpdated;
@@ -26,16 +26,11 @@ namespace CSharpTaskManager
                 OnFailure(null , new ProcessUpdaterEventArgs(proc, e));
             }
         }
-        public static void UpdateProc(int PID, ListView listView)
+        
+        public virtual void UpdateProcess(Process proc)
         {
-
             
-            foreach(ListViewItem row in listView.Items)
-            {
 
-            }
-
-            OnProcessUpdated(null, new ProcessUpdaterEventArgs(proc));
         }
 
     }

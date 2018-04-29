@@ -12,6 +12,13 @@ using System.Diagnostics;
 
 namespace CSharpTaskManager
 {
+    /*TODO
+     *  Update items that are in the list, but not replace them (Too expensive)
+     *  Target removed items by ID so you don't kill multiple processes that might have the same name?
+     * 
+     */
+
+
     public partial class Form1 : Form
     {
         public Form1()
@@ -23,6 +30,9 @@ namespace CSharpTaskManager
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            ProcessCache.OnProcessKilled += ProcessCache_OnProcessKilled;
+            ProcessCache.OnProcessStarted += ProcessCache_OnProcessStarted;
+
             #region Event Subscription
             ProcessUpdater.OnProcessKilled += ProcessUpdater_OnProcessKilled;
             ProcessUpdater.OnProcessUpdated += ProcessUpdater_OnProcessUpdated;
@@ -31,12 +41,30 @@ namespace CSharpTaskManager
             MenuItem[] menuItems = new MenuItem[]
             {
                 new MenuItem("Kill", OnProcessKilled)
+                // Add  get thread information
             };
             _contextMenu = new ContextMenu(menuItems);
 
-            UpdateListViewItems(listViewProcesses);
 
 
+            ProcessCache.ComparisonProperty = ComparisonType.PID;
+            ProcessCache.AddRange(Process.GetProcesses());
+
+            ProcessCache.ContinousCacheUpdate();
+
+            listViewProcesses.Items.AddRange(ProcessCache.Instance.ConvertToListViewArray());
+        }
+
+        private void ProcessCache_OnProcessStarted(object sender, ProcessUpdaterEventArgs e)
+        {
+            ControlInvokeRequired(listViewProcesses, () => listViewProcesses.Items.Add(e.Instance.ConvertToListViewItem()));
+        }
+
+        private void ProcessCache_OnProcessKilled(object sender, ProcessUpdaterEventArgs e)
+        {
+            MessageBox.Show("Removing " + e.Name);
+            // Will need to remove by ID
+            ControlInvokeRequired(listViewProcesses, () => listViewProcesses.Items.Remove(listViewProcesses.FindItemWithText(e.Name)));
         }
 
         public bool ControlInvokeRequired(Control c, Action a)
@@ -57,90 +85,17 @@ namespace CSharpTaskManager
 
 
 
-            new Task(() =>
-            {
-                while (true)
-                {
-                    Process[] procs = Process.GetProcesses();
-                    foreach (Process proc in procs)
-                    {
-                        var listViewItem = new ListViewItem(new string[] { proc.ProcessName, proc.WorkingSet64.ToString(), proc.Id.ToString() });
-                        listViewItem.Tag = proc.Id;
-                        if (listViewProcesses.InvokeRequired)
-                        {
-                            ControlInvokeRequired(listView, new Action(() =>
-                            {
-                                if (listView.Items.Find(listViewItem.Tag.ToString(), true).Length == 0)
-                                    listView.Items.Add(listViewItem);
-                                else
-                                    Debug.WriteLine($"Attemping to add LVI that already exists {listViewItem}");
-                            }));
-                        }
-                        else
-                            listView.Items.Add(listViewItem);
-                    }
-
-                    if (listView.InvokeRequired)
-                    {
-                        ControlInvokeRequired(listView, new Action(() =>
-                        {
-                            try
-                            {
-                                foreach (ListViewItem lvi in listView.Items)
-                                {
-                                    var lviProc = Process.GetProcessesByName(lvi.SubItems[0].Text);
-
-                                    //long mem = 0;
-                                    //foreach (Process proc in lviProc)
-                                    //{
-                                    //    mem += proc.WorkingSet64;
-                                    //}
-                                    if (lvi.SubItems.Count > 0 && lviProc.Length >= 0)
-                                    {
-                                        //Debug.WriteLine(lviProc[0]);
-                                        lvi.SubItems[1] = new ListViewItem.ListViewSubItem(null, lviProc[0].WorkingSet64.ToString());
-                                        //Debug.WriteLine(lvi.SubItems[1] + " set to " + lviProc[0].WorkingSet64);
-                                    }
-                                    else
-                                    {
-                                        //Debug.WriteLine(lvi.Name + ":" + lvi.SubItems.Count + ", " + lviProc.Length);
-                                    }
-                                    //Debug.WriteLine("end");
-
-                                }
-                            }
-                            catch (InvalidOperationException f)
-                            {
-                                Debug.WriteLine(f);
-                            }
-                        }));
-                    }
-                    else
-                    {
-                        foreach (ListViewItem lvi in listView.Items)
-                        {
-                            var lviProc = Process.GetProcessesByName(lvi.SubItems[0].Name);
-                            Debug.WriteLine($"lvi.SubItems[0].Name => {lvi.SubItems[0].Name}");
-
-                            long mem = 0;
-                            foreach (Process proc in lviProc)
-                            {
-                                Debug.WriteLine($"Name[{proc.ProcessName}] Mem[{proc.WorkingSet64}]");
-                                mem += proc.WorkingSet64;
-                            }
-                            Debug.WriteLine($"Setting {lvi.SubItems[1].Text} to {mem.ToString()}");
-                            lvi.SubItems[1].Text = mem.ToString();
-                        }
-                    }
-                    Debug.WriteLine("Sleeping to two seconds");
-                    Thread.Sleep(10000);
-                }
-            }).Start();
+            //new Task(() => 
+            //{
+            //    while (true)
+            //    {
 
 
+            //        Thread.Sleep(1000);
+            //    }
 
-
-
+            //}
+            //);
         }
 
         #region Context Menu Actions

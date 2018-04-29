@@ -43,7 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DummyProcessExtensionClass.cs" />
     <Compile Include="ListViewItemComparer.cs" />
+    <Compile Include="ProcessCache.cs" />
     <Compile Include="ProcessUpdater.cs" />
     <Compile Include="ProcessUpdaterEventArgs.cs" />
     <Compile Include="Program.cs" />

@@ -12,14 +12,7 @@ namespace CSTM_Tests
         PID, NAME
     }
 
-    public static class ProcCache
-    {
-        private static HashSet<Process> _procs = new HashSet<Process>(Process.GetProcesses(), new ListViewItemComparer(ComparisonType.PID));
-        public static HashSet<Process> ProcessList
-        {
-            get => _procs;
-        }
-    }
+ 
     public class ListViewItemWrapper
     {
         public ListViewItemWrapper()

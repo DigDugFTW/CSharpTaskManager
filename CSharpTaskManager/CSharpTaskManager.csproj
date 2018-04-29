@@ -51,7 +51,9 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="ListViewItemComparer.cs" />
+    <Compile Include="ProcessCache.cs" />
+    <Compile Include="ProcessComparer.cs" />
+    <Compile Include="ProcessExtensionMethods.cs" />
     <Compile Include="ProcessUpdater.cs" />
     <Compile Include="ProcessUpdaterEventArgs.cs" />
     <Compile Include="Program.cs" />
