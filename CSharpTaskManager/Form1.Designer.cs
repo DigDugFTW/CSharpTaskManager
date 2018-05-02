@@ -92,6 +92,7 @@
             this.buttonKillProcess.TabIndex = 1;
             this.buttonKillProcess.Text = "End Task";
             this.buttonKillProcess.UseVisualStyleBackColor = true;
+            this.buttonKillProcess.Click += new System.EventHandler(this.buttonKillProcess_Click);
             // 
             // tabControlMain
             // 
@@ -190,6 +191,7 @@
             // 
             // buttonKillProc
             // 
+            this.buttonKillProc.Enabled = false;
             this.buttonKillProc.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonKillProc.Location = new System.Drawing.Point(16, 61);
             this.buttonKillProc.Name = "buttonKillProc";
@@ -197,6 +199,7 @@
             this.buttonKillProc.TabIndex = 2;
             this.buttonKillProc.Text = "Kill Process";
             this.buttonKillProc.UseVisualStyleBackColor = true;
+            this.buttonKillProc.Click += new System.EventHandler(this.buttonKillProc_Click);
             // 
             // textBoxKillProcName
             // 
@@ -204,6 +207,7 @@
             this.textBoxKillProcName.Name = "textBoxKillProcName";
             this.textBoxKillProcName.Size = new System.Drawing.Size(170, 20);
             this.textBoxKillProcName.TabIndex = 0;
+            this.textBoxKillProcName.TextChanged += new System.EventHandler(this.textBoxKillProcName_TextChanged);
             // 
             // groupBox1
             // 
@@ -275,6 +279,7 @@
             this.radioButtonNormal.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.radioButtonNormal.Appearance = System.Windows.Forms.Appearance.Button;
             this.radioButtonNormal.AutoSize = true;
+            this.radioButtonNormal.Checked = true;
             this.radioButtonNormal.Location = new System.Drawing.Point(475, 73);
             this.radioButtonNormal.Name = "radioButtonNormal";
             this.radioButtonNormal.Size = new System.Drawing.Size(50, 23);
@@ -298,6 +303,7 @@
             // 
             // buttonStartTask
             // 
+            this.buttonStartTask.Enabled = false;
             this.buttonStartTask.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonStartTask.Location = new System.Drawing.Point(16, 61);
             this.buttonStartTask.Name = "buttonStartTask";
@@ -305,6 +311,7 @@
             this.buttonStartTask.TabIndex = 2;
             this.buttonStartTask.Text = "Start Task";
             this.buttonStartTask.UseVisualStyleBackColor = true;
+            this.buttonStartTask.Click += new System.EventHandler(this.buttonStartTask_Click);
             // 
             // textBoxProcArgs
             // 
@@ -319,6 +326,7 @@
             this.textBoxStartProcName.Name = "textBoxStartProcName";
             this.textBoxStartProcName.Size = new System.Drawing.Size(170, 20);
             this.textBoxStartProcName.TabIndex = 0;
+            this.textBoxStartProcName.TextChanged += new System.EventHandler(this.textBoxStartProcName_TextChanged);
             // 
             // tabPageServiceInfo
             // 
@@ -518,6 +526,7 @@
             this.textBoxSearchProcess.Name = "textBoxSearchProcess";
             this.textBoxSearchProcess.Size = new System.Drawing.Size(191, 20);
             this.textBoxSearchProcess.TabIndex = 3;
+            this.textBoxSearchProcess.TextChanged += new System.EventHandler(this.textBoxSearchProcess_TextChanged);
             // 
             // buttonSearchProcess
             // 

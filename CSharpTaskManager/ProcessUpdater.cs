@@ -17,13 +17,16 @@ namespace CSharpTaskManager
 
         public static void KillProc(Process proc)
         {
+           
             try
             {
                 proc.Kill();
-                OnProcessKilled(null , new ProcessUpdaterEventArgs(proc));
+                OnProcessKilled(null , new ProcessUpdaterEventArgs(proc, 1));
+                
+                
             }catch(Exception e)
             {
-                OnFailure(null , new ProcessUpdaterEventArgs(proc, e));
+                Debug.WriteLine(e.Message);
             }
         }
         
@@ -33,5 +36,6 @@ namespace CSharpTaskManager
 
         }
 
+      
     }
 }

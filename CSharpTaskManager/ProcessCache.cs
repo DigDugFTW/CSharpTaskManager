@@ -1,90 +1,112 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Threading;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Management;
+using System.Windows.Forms;
+
 namespace CSharpTaskManager
 {
     public enum ComparisonType
     {
-        NAME, PID, NA
+        NA, FULL, NAME, PID
     }
+
     public static class ProcessCache
     {
 
+        // MEW objects, for calling wmi with wql (wmiql)        
+        public static ManagementEventWatcher watchStartEvent;
+        public static ManagementEventWatcher watchStopEvent;
+
+        #region Events and Delegates, for list view updating
         public delegate void ProcessCacheEventHandler(object sender, ProcessUpdaterEventArgs e);
         public static event ProcessCacheEventHandler OnProcessKilled;
         public static event ProcessCacheEventHandler OnProcessStarted;
-       
+        #endregion
         
+        public static ProcessComparer<Component> _processComparer = new ProcessComparer<Component>();
+        private static HashSet<Process> _procWrap = new HashSet<Process>(_processComparer);
 
-        public static ComparisonType ComparisonProperty { set; get; } = ComparisonType.NA;
-        private static HashSet<Process> _procWrap = new HashSet<Process>(new ProcessComparer());
-
+        #region Properties
+        // Instance of the parent list view.
+        public static ListView ParentListView { set; get; }
         public static bool ContinueCacheUpdate { set; get; } = true;
-        public static void AddRange(IEnumerable<Process> collection)
+        public static ComparisonType ProcessComparerComparisonType { set => _processComparer.ComparisonProperty = value; get => _processComparer.ComparisonProperty; }
+        #endregion
+
+        #region HashSet methods
+        public static void AddRangeHashSet(IEnumerable<Process> collection)
         {
             foreach (var proc in collection)
                 _procWrap.Add(proc);
         }
-        public static void Add(Process proc)
+        public static void AddHashSet(Process proc)
         {
+            OnProcessStarted(null, new ProcessUpdaterEventArgs(proc));
             _procWrap.Add(proc);
         }
-        public static void Remove(Process proc)
+        public static void RemoveHashSet(Process proc)
         {
+           
+            OnProcessKilled(null, new ProcessUpdaterEventArgs(proc));
             _procWrap.Remove(proc);
-        }
-        public static HashSet<Process> Instance { get => _procWrap; }
 
-      
-        public static void ContinousCacheUpdate()
+        }
+        public static void RemoveHashSet(int procID)
         {
             
-            Debug.WriteLine("Starting continuous cache thread");
-            new Task(() => 
+            try
             {
-                Debug.WriteLine("Cache size: " + _procWrap.Count);
-               
-                while (ContinueCacheUpdate)
+                var tempProcessObject = new ProcessObject()
                 {
-                  
-                    foreach(Process proc in Process.GetProcesses())
+                    Id = procID
+                };
+
+                ControlInvokeRequired.invoke(ParentListView, () =>
+                {
+                    OnProcessKilled(null, new ProcessUpdaterEventArgs(tempProcessObject));
+                    List<Process> tempProcList = new List<Process>(_procWrap);
+
+                    // debug
+                    foreach (var proc in tempProcList)
                     {
-                        if (!_procWrap.Contains(proc))
+                        if (proc.Id == tempProcessObject.Id)
                         {
-                            _procWrap.Add(proc);
-                            OnProcessStarted(null, new ProcessUpdaterEventArgs(proc));
-                            Debug.WriteLine("Adding: "+proc+" index: ");
-                            
-                        }
-                       
-                        // else
-                        //Debug.WriteLine(proc+" already exists, not adding.");
-                    }
-                    foreach (var pr in _procWrap.ToList())
-                    {
-                        //Check if process is alive
-                        try
-                        {
-                            if (Process.GetProcessById(pr.Id) == null) ;
-                        }
-                        catch (Exception e)
-                        {
-                            _procWrap.Remove(pr);
-                            OnProcessKilled(null, new ProcessUpdaterEventArgs(pr));
-                            Debug.WriteLine("Process has exited, removing");
+                            _procWrap.Remove(proc);
                         }
                     }
-
-                    //Debug.WriteLine("Cache size: " + _procWrap.Count);
-
-                    Thread.Sleep(2000);
-                }
-            }).Start();
-            Debug.WriteLine("Exited cache thread");
+                });
+               
+            }
+            catch(Exception f)
+            {
+                Debug.WriteLine("Exeption at RemoveHashSet: " + f.Message);
+            }
+            
         }
+        public static HashSet<Process> Instance { get => _procWrap; }
+        #endregion
+
+       
+        // init Wql and ManagementEventWatcher objects
+        // Start listening to Win32_ start tract and stop trace
+        public static void InitWQL()
+        {
+         
+
+            WqlEventQuery startEventQuery = new WqlEventQuery("Win32_ProcessStartTrace");
+            WqlEventQuery stopEventQuery = new WqlEventQuery("Win32_ProcessStopTrace");
+
+            watchStartEvent = new ManagementEventWatcher(startEventQuery);
+            watchStopEvent = new ManagementEventWatcher(stopEventQuery);
+
+            watchStartEvent.Start();
+            watchStopEvent.Start();
+        }
+
     }
 }

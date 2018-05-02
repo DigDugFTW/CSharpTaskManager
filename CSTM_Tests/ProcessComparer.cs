@@ -4,25 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
-namespace CSharpTaskManager
+namespace CSTM_Tests
 {
-   
+    public enum ComparisonType
+    {
+        PID, NAME, FULL, NA
+    }
     public class ProcessComparer<Component> : IEqualityComparer<Component>
     {
         public ComparisonType ComparisonProperty { set; get; } = ComparisonType.NA;
         public bool Equals(Component x, Component y)
         {
-            if (x == null || y == null)
-            {
-                if (x == null)
-                    throw new Exception($"x was null in Process Comparer y is {y}");
-                else
-                    throw new Exception($"y was null in Process Comparer x is {x}");
-            }
-            
             if (ComparisonProperty == ComparisonType.PID)
             {
-
                 if (x.GetType() == typeof(Process) && y.GetType() == typeof(Process))
                     return (x as Process).Id == (y as Process).Id;
                 else if (x.GetType() == typeof(ProcessObject) && y.GetType() == typeof(ProcessObject))
@@ -38,12 +32,20 @@ namespace CSharpTaskManager
                 if (x.GetType() == typeof(Process) && y.GetType() == typeof(Process))
                     return String.Equals((x as Process).ProcessName, (y as Process).ProcessName, StringComparison.OrdinalIgnoreCase);
                 else if (x.GetType() == typeof(ProcessObject) && y.GetType() == typeof(ProcessObject))
+                {
+                    Console.WriteLine("Both types are process object");
                     return String.Equals((x as ProcessObject).ProcessName, (y as ProcessObject).ProcessName, StringComparison.OrdinalIgnoreCase);
-                else if (x.GetType() == typeof(ProcessObject) && y.GetType() == typeof(Process))    
+                }
+                else if (x.GetType() == typeof(ProcessObject) && y.GetType() == typeof(Process))
+                {
+                    Console.WriteLine("x = PO / y = P");
                     return String.Equals((x as ProcessObject).ProcessName, (y as Process).ProcessName, StringComparison.OrdinalIgnoreCase);
-                else 
+                }
+                else
+                {
+                    Console.WriteLine("x = P / y = PO");
                     return String.Equals((x as Process).ProcessName, (y as ProcessObject).ProcessName, StringComparison.OrdinalIgnoreCase);
-                
+                }
             }
             else if (ComparisonProperty == ComparisonType.FULL)
             {

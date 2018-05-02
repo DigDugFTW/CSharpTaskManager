@@ -43,11 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DummyProcessExtensionClass.cs" />
-    <Compile Include="ListViewItemComparer.cs" />
-    <Compile Include="ProcessCache.cs" />
-    <Compile Include="ProcessUpdater.cs" />
-    <Compile Include="ProcessUpdaterEventArgs.cs" />
+    <Compile Include="ProcessComparer.cs" />
+    <Compile Include="ProcessObject.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

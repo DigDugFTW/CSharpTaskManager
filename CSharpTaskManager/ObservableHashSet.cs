@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSTM_Tests
+namespace CSharpTaskManager
 {
-    static class DummyProcessExtensionClass
+    class ObservableHashSet
     {
-        
-
     }
 }
